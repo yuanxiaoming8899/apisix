@@ -1,255 +1,238 @@
-<!--
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
--->
-
-# Apache APISIX API Gateway
-
-<img src="./logos/apisix-white-bg.jpg" alt="APISIX logo" height="150px" align="right" />
-
-[![Build Status](https://github.com/apache/apisix/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/apache/apisix/actions/workflows/build.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/apache/apisix/blob/master/LICENSE)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/apache/apisix)](https://github.com/apache/apisix/graphs/commit-activity)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/apache/apisix.svg)](http://isitmaintained.com/project/apache/apisix "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/apache/apisix.svg)](http://isitmaintained.com/project/apache/apisix "Percentage of issues still open")
-[![Slack](https://badgen.net/badge/Slack/Join%20Apache%20APISIX?icon=slack)](https://apisix.apache.org/slack)
-
-**Apache APISIX** is a dynamic, real-time, high-performance API Gateway.
-
-APISIX API Gateway provides rich traffic management features such as load balancing, dynamic upstream, canary release, circuit breaking, authentication, observability, and more.
-
-You can use **APISIX API Gateway** to handle traditional north-south traffic,
-as well as east-west traffic between services.
-It can also be used as a [k8s ingress controller](https://github.com/apache/apisix-ingress-controller).
-
-The technical architecture of Apache APISIX:
-
-![Technical architecture of Apache APISIX](docs/assets/images/apisix.png)
-
-## Community
-
-- Mailing List: Mail to dev-subscribe@apisix.apache.org, follow the reply to subscribe to the mailing list.
-- QQ Group - 552030619, 781365357
-- Slack Workspace - [invitation link](https://apisix.apache.org/slack) (Please open an [issue](https://apisix.apache.org/docs/general/submit-issue) if this link is expired), and then join the #apisix channel (Channels -> Browse channels -> search for "apisix").
-- ![Twitter Follow](https://img.shields.io/twitter/follow/ApacheAPISIX?style=social) - follow and interact with us using hashtag `#ApacheAPISIX`
-- [Documentation](https://apisix.apache.org/docs/)
-- [Discussions](https://github.com/apache/apisix/discussions)
-- [Blog](https://apisix.apache.org/blog)
-
-## Features
-
-You can use APISIX API Gateway as a traffic entrance to process all business data, including dynamic routing, dynamic upstream, dynamic certificates,
-A/B testing, canary release, blue-green deployment, limit rate, defense against malicious attacks, metrics, monitoring alarms, service observability, service governance, etc.
-
-- **All platforms**
-
-  - Cloud-Native: Platform agnostic, No vendor lock-in, APISIX API Gateway can run from bare-metal to Kubernetes.
-  - Supports ARM64: Don't worry about the lock-in of the infra technology.
-
-- **Multi protocols**
-
-  - [TCP/UDP Proxy](docs/en/latest/stream-proxy.md): Dynamic TCP/UDP proxy.
-  - [Dubbo Proxy](docs/en/latest/plugins/dubbo-proxy.md): Dynamic HTTP to Dubbo proxy.
-  - [Dynamic MQTT Proxy](docs/en/latest/plugins/mqtt-proxy.md): Supports to load balance MQTT by `client_id`, both support MQTT [3.1.\*](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html), [5.0](https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html).
-  - [gRPC proxy](docs/en/latest/grpc-proxy.md): Proxying gRPC traffic.
-  - [gRPC Web Proxy](docs/en/latest/plugins/grpc-web.md): Proxying gRPC Web traffic to gRPC Service.
-  - [gRPC transcoding](docs/en/latest/plugins/grpc-transcode.md): Supports protocol transcoding so that clients can access your gRPC API by using HTTP/JSON.
-  - Proxy Websocket
-  - Proxy Protocol
-  - HTTP(S) Forward Proxy
-  - [SSL](docs/en/latest/certificate.md): Dynamically load an SSL certificate.
-
-- **Full Dynamic**
-
-  - [Hot Updates And Hot Plugins](docs/en/latest/terminology/plugin.md): Continuously updates its configurations and plugins without restarts!
-  - [Proxy Rewrite](docs/en/latest/plugins/proxy-rewrite.md): Support rewrite the `host`, `uri`, `schema`, `method`, `headers` of the request before send to upstream.
-  - [Response Rewrite](docs/en/latest/plugins/response-rewrite.md): Set customized response status code, body and header to the client.
-  - Dynamic Load Balancing: Round-robin load balancing with weight.
-  - Hash-based Load Balancing: Load balance with consistent hashing sessions.
-  - [Health Checks](docs/en/latest/tutorials/health-check.md): Enable health check on the upstream node and will automatically filter unhealthy nodes during load balancing to ensure system stability.
-  - Circuit-Breaker: Intelligent tracking of unhealthy upstream services.
-  - [Proxy Mirror](docs/en/latest/plugins/proxy-mirror.md): Provides the ability to mirror client requests.
-  - [Traffic Split](docs/en/latest/plugins/traffic-split.md): Allows users to incrementally direct percentages of traffic between various upstreams.
-
-- **Fine-grained routing**
-
-  - [Supports full path matching and prefix matching](docs/en/latest/router-radixtree.md#how-to-use-libradixtree-in-apisix)
-  - [Support all Nginx built-in variables as conditions for routing](docs/en/latest/router-radixtree.md#how-to-filter-route-by-nginx-builtin-variable), so you can use `cookie`, `args`, etc. as routing conditions to implement canary release, A/B testing, etc.
-  - Support [various operators as judgment conditions for routing](https://github.com/iresty/lua-resty-radixtree#operator-list), for example `{"arg_age", ">", 24}`
-  - Support [custom route matching function](https://github.com/iresty/lua-resty-radixtree/blob/master/t/filter-fun.t#L10)
-  - IPv6: Use IPv6 to match the route.
-  - Support [TTL](docs/en/latest/admin-api.md#route)
-  - [Support priority](docs/en/latest/router-radixtree.md#3-match-priority)
-  - [Support Batch Http Requests](docs/en/latest/plugins/batch-requests.md)
-  - [Support filtering route by GraphQL attributes](docs/en/latest/router-radixtree.md#how-to-filter-route-by-graphql-attributes)
-
-- **Security**
-
-  - Rich authentication & authorization support:
-    * [key-auth](docs/en/latest/plugins/key-auth.md)
-    * [JWT](docs/en/latest/plugins/jwt-auth.md)
-    * [basic-auth](docs/en/latest/plugins/basic-auth.md)
-    * [wolf-rbac](docs/en/latest/plugins/wolf-rbac.md)
-    * [casbin](docs/en/latest/plugins/authz-casbin.md)
-    * [keycloak](docs/en/latest/plugins/authz-keycloak.md)
-    * [casdoor](docs/en/latest/plugins/authz-casdoor.md)
-  - [IP Whitelist/Blacklist](docs/en/latest/plugins/ip-restriction.md)
-  - [Referer Whitelist/Blacklist](docs/en/latest/plugins/referer-restriction.md)
-  - [IdP](docs/en/latest/plugins/openid-connect.md): Support external Identity platforms, such as Auth0, okta, etc..
-  - [Limit-req](docs/en/latest/plugins/limit-req.md)
-  - [Limit-count](docs/en/latest/plugins/limit-count.md)
-  - [Limit-concurrency](docs/en/latest/plugins/limit-conn.md)
-  - Anti-ReDoS(Regular expression Denial of Service): Built-in policies to Anti ReDoS without configuration.
-  - [CORS](docs/en/latest/plugins/cors.md) Enable CORS(Cross-origin resource sharing) for your API.
-  - [URI Blocker](docs/en/latest/plugins/uri-blocker.md): Block client request by URI.
-  - [Request Validator](docs/en/latest/plugins/request-validation.md)
-  - [CSRF](docs/en/latest/plugins/csrf.md) Based on the [`Double Submit Cookie`](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Double_Submit_Cookie) way, protect your API from CSRF attacks.
-
-- **OPS friendly**
-
-  - Zipkin tracing: [Zipkin](docs/en/latest/plugins/zipkin.md)
-  - Open source APM: support [Apache SkyWalking](docs/en/latest/plugins/skywalking.md)
-  - Works with external service discovery: In addition to the built-in etcd, it also supports [Consul](docs/en/latest/discovery/consul.md), [Consul_kv](docs/en/latest/discovery/consul_kv.md), [Nacos](docs/en/latest/discovery/nacos.md), [Eureka](docs/en/latest/discovery/eureka.md) and [Zookeeper (CP)](https://github.com/api7/apisix-seed/blob/main/docs/en/latest/zookeeper.md).
-  - Monitoring And Metrics: [Prometheus](docs/en/latest/plugins/prometheus.md)
-  - Clustering: APISIX nodes are stateless, creates clustering of the configuration center, please refer to [etcd Clustering Guide](https://etcd.io/docs/v3.5/op-guide/clustering/).
-  - High availability: Support to configure multiple etcd addresses in the same cluster.
-  - [Dashboard](https://github.com/apache/apisix-dashboard)
-  - Version Control: Supports rollbacks of operations.
-  - CLI: start\stop\reload APISIX through the command line.
-  - [Standalone](docs/en/latest/deployment-modes.md#standalone): Supports to load route rules from local YAML file, it is more friendly such as under the kubernetes(k8s).
-  - [Global Rule](docs/en/latest/terminology/global-rule.md): Allows to run any plugin for all request, eg: limit rate, IP filter etc.
-  - High performance: The single-core QPS reaches 18k with an average delay of fewer than 0.2 milliseconds.
-  - [Fault Injection](docs/en/latest/plugins/fault-injection.md)
-  - [REST Admin API](docs/en/latest/admin-api.md): Using the REST Admin API to control Apache APISIX, which only allows 127.0.0.1 access by default, you can modify the `allow_admin` field in `conf/config.yaml` to specify a list of IPs that are allowed to call the Admin API. Also, note that the Admin API uses key auth to verify the identity of the caller. **The `admin_key` field in `conf/config.yaml` needs to be modified before deployment to ensure security**.
-  - External Loggers: Export access logs to external log management tools. ([HTTP Logger](docs/en/latest/plugins/http-logger.md), [TCP Logger](docs/en/latest/plugins/tcp-logger.md), [Kafka Logger](docs/en/latest/plugins/kafka-logger.md), [UDP Logger](docs/en/latest/plugins/udp-logger.md), [RocketMQ Logger](docs/en/latest/plugins/rocketmq-logger.md), [SkyWalking Logger](docs/en/latest/plugins/skywalking-logger.md), [Alibaba Cloud Logging(SLS)](docs/en/latest/plugins/sls-logger.md), [Google Cloud Logging](docs/en/latest/plugins/google-cloud-logging.md), [Splunk HEC Logging](docs/en/latest/plugins/splunk-hec-logging.md), [File Logger](docs/en/latest/plugins/file-logger.md), [SolarWinds Loggly Logging](docs/en/latest/plugins/loggly.md), [TencentCloud CLS](docs/en/latest/plugins/tencent-cloud-cls.md)).
-  - [ClickHouse](docs/en/latest/plugins/clickhouse-logger.md): push logs to ClickHouse.
-  - [Elasticsearch](docs/en/latest/plugins/elasticsearch-logger.md): push logs to Elasticsearch.
-  - [Datadog](docs/en/latest/plugins/datadog.md): push custom metrics to the DogStatsD server, comes bundled with [Datadog agent](https://docs.datadoghq.com/agent/), over the UDP protocol. DogStatsD basically is an implementation of StatsD protocol which collects the custom metrics for Apache APISIX agent, aggregates it into a single data point and sends it to the configured Datadog server.
-  - [Helm charts](https://github.com/apache/apisix-helm-chart)
-  - [HashiCorp Vault](https://www.vaultproject.io/): Support secret management solution for accessing secrets from Vault secure storage backed in a low trust environment. Currently, RS256 keys (public-private key pairs) or secret keys can be linked from vault in jwt-auth authentication plugin using [APISIX Secret](docs/en/latest/terminology/secret.md) resource.
-
-- **Highly scalable**
-  - [Custom plugins](docs/en/latest/plugin-develop.md): Allows hooking of common phases, such as `rewrite`, `access`, `header filter`, `body filter` and `log`, also allows to hook the `balancer` stage.
-  - [Plugin can be written in Java/Go/Python](docs/en/latest/external-plugin.md)
-  - [Plugin can be written with Proxy Wasm SDK](docs/en/latest/wasm.md)
-  - Custom load balancing algorithms: You can use custom load balancing algorithms during the `balancer` phase.
-  - Custom routing: Support users to implement routing algorithms themselves.
-
-- **Multi-Language support**
-  - Apache APISIX is a multi-language gateway for plugin development and provides support via `RPC` and `Wasm`.
-  ![Multi Language Support into Apache APISIX](docs/assets/images/external-plugin.png)
-  - The RPC way, is the current way. Developers can choose the language according to their needs and after starting an independent process with the RPC, it exchanges data with APISIX through local RPC communication. Till this moment, APISIX has support for [Java](https://github.com/apache/apisix-java-plugin-runner), [Golang](https://github.com/apache/apisix-go-plugin-runner), [Python](https://github.com/apache/apisix-python-plugin-runner) and Node.js.
-  - The Wasm or WebAssembly, is an experimental way. APISIX can load and run Wasm bytecode via APISIX [wasm plugin](https://github.com/apache/apisix/blob/master/docs/en/latest/wasm.md) written with the [Proxy Wasm SDK](https://github.com/proxy-wasm/spec#sdks). Developers only need to write the code according to the SDK and then compile it into a Wasm bytecode that runs on Wasm VM with APISIX.
-
-- **Serverless**
-  - [Lua functions](docs/en/latest/plugins/serverless.md): Invoke functions in each phase in APISIX.
-  - [AWS Lambda](docs/en/latest/plugins/aws-lambda.md): Integration with AWS Lambda function as a dynamic upstream to proxy all requests for a particular URI to the AWS API gateway endpoint. Supports authorization via api key and AWS IAM access secret.
-  - [Azure Functions](docs/en/latest/plugins/azure-functions.md): Seamless integration with Azure Serverless Function as a dynamic upstream to proxy all requests for a particular URI to the Microsoft Azure cloud.
-  - [Apache OpenWhisk](docs/en/latest/plugins/openwhisk.md): Seamless integration with Apache OpenWhisk as a dynamic upstream to proxy all requests for a particular URI to your own OpenWhisk cluster.
-
-## Get Started
-
-1. Installation
-
-   Please refer to [install documentation](https://apisix.apache.org/docs/apisix/installation-guide/).
-
-2. Getting started
-
-   The getting started guide is a great way to learn the basics of APISIX. Just follow the steps in [Getting Started](https://apisix.apache.org/docs/apisix/getting-started/).
-
-   Further, you can follow the documentation to try more [plugins](docs/en/latest/plugins).
-
-3. Admin API
-
-   Apache APISIX provides [REST Admin API](docs/en/latest/admin-api.md) to dynamically control the Apache APISIX cluster.
-
-4. Plugin development
-
-   You can refer to [plugin development guide](docs/en/latest/plugin-develop.md), and sample plugin `example-plugin`'s code implementation.
-   Reading [plugin concept](docs/en/latest/terminology/plugin.md) would help you learn more about the plugin.
-
-For more documents, please refer to [Apache APISIX Documentation site](https://apisix.apache.org/docs/apisix/getting-started/)
-
-## Benchmark
-
-Using AWS's eight-core server, APISIX's QPS reaches 140,000 with a latency of only 0.2 ms.
-
-[Benchmark script](benchmark/run.sh) has been open sourced, welcome to try and contribute.
-
-[APISIX also works perfectly in AWS graviton3 C7g.](https://apisix.apache.org/blog/2022/06/07/installation-performance-test-of-apigateway-apisix-on-aws-graviton3)
-
-## Contributor Over Time
-
-> [visit here](https://www.apiseven.com/contributor-graph) to generate Contributor Over Time.
-
-[![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?repo=apache/apisix)](https://www.apiseven.com/en/contributor-graph?repo=apache/apisix)
-
-## User Stories
-
-- [European eFactory Platform: API Security Gateway – Using APISIX in the eFactory Platform](https://www.efactory-project.eu/post/api-security-gateway-using-apisix-in-the-efactory-platform)
-- [Copernicus Reference System Software](https://github.com/COPRS/infrastructure/wiki/Networking-trade-off)
-- [More Stories](https://apisix.apache.org/blog/tags/case-studies/)
-
-## Who Uses APISIX API Gateway?
-
-A wide variety of companies and organizations use APISIX API Gateway for research, production and commercial product, below are some of them:
-
-- Airwallex
-- Bilibili
-- CVTE
-- European eFactory Platform
-- European Copernicus Reference System
-- Geely
-- HONOR
-- Horizon Robotics
-- iQIYI
-- Lenovo
-- NASA JPL
-- Nayuki
-- OPPO
-- QingCloud
-- Swisscom
-- Tencent Game
-- Travelsky
-- vivo
-- Sina Weibo
-- WeCity
-- WPS
-- XPENG
-- Zoom
-
-## Landscape
-
-<p align="left">
-<img src="./logos/cncf-landscape-white-bg.jpg" width="175">&nbsp;&nbsp;<img src="./logos/cncf-white-bg.jpg" width="200" />
-<br /><br />
-APISIX enriches the <a href="https://landscape.cncf.io/card-mode?category=api-gateway&grouping=category">
-CNCF API Gateway Landscape.</a>
+<div class="Box-sc-g0xbh4-0 bJMeLZ js-snippet-clipboard-copy-unpositioned" data-hpc="true"><article class="markdown-body entry-content container-lg" itemprop="text">
+<div class="markdown-heading" dir="auto"><h1 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX API 网关</font></font></h1><a id="user-content-apache-apisix-api-gateway" class="anchor" aria-label="永久链接：Apache APISIX API 网关" href="#apache-apisix-api-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="/apache/apisix/blob/master/logos/apisix-white-bg.jpg"><img src="/apache/apisix/raw/master/logos/apisix-white-bg.jpg" alt="APISIX 徽标" height="150px" align="right" style="max-width: 100%;"></a></p>
+<p dir="auto"><a href="https://github.com/apache/apisix/actions/workflows/build.yml"><img src="https://github.com/apache/apisix/actions/workflows/build.yml/badge.svg?branch=master" alt="构建状态" style="max-width: 100%;"></a>
+<a href="https://github.com/apache/apisix/blob/master/LICENSE"><img src="https://camo.githubusercontent.com/db9dfde8049c5d66ba62fde707d2cfb30e26f9f26ff274c3442c0aec1ec410a4/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4c6963656e73652d417061636865253230322e302d626c75652e737667" alt="执照" data-canonical-src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" style="max-width: 100%;"></a>
+<a href="https://github.com/apache/apisix/graphs/commit-activity"><img src="https://camo.githubusercontent.com/051b253f53df6540b23d1979ee0d60291880e119d3318166ebc752c29f4a8c49/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f636f6d6d69742d61637469766974792f6d2f6170616368652f617069736978" alt="提交活动" data-canonical-src="https://img.shields.io/github/commit-activity/m/apache/apisix" style="max-width: 100%;"></a>
+<a href="http://isitmaintained.com/project/apache/apisix" title="解决问题的平均时间" rel="nofollow"><img src="https://camo.githubusercontent.com/9bd73841ff7171997e6f9bdec1d2719528e4499cb64b7785a5311785d4dc4f37/687474703a2f2f697369746d61696e7461696e65642e636f6d2f62616467652f7265736f6c7574696f6e2f6170616368652f6170697369782e737667" alt="解决问题的平均时间" data-canonical-src="http://isitmaintained.com/badge/resolution/apache/apisix.svg" style="max-width: 100%;"></a>
+<a href="http://isitmaintained.com/project/apache/apisix" title="仍未解决的问题百分比" rel="nofollow"><img src="https://camo.githubusercontent.com/1d580fecf29b4af953b534b218b7378900d821c016a661c30d9f7af033283c11/687474703a2f2f697369746d61696e7461696e65642e636f6d2f62616467652f6f70656e2f6170616368652f6170697369782e737667" alt="仍未解决的问题百分比" data-canonical-src="http://isitmaintained.com/badge/open/apache/apisix.svg" style="max-width: 100%;"></a>
+<a href="https://apisix.apache.org/slack" rel="nofollow"><img src="https://camo.githubusercontent.com/edc9b480de8edeef193ab88d1e3825befc5830f9fcec98c27b5939f2c8f534ec/68747470733a2f2f62616467656e2e6e65742f62616467652f536c61636b2f4a6f696e2532304170616368652532304150495349583f69636f6e3d736c61636b" alt="松弛" data-canonical-src="https://badgen.net/badge/Slack/Join%20Apache%20APISIX?icon=slack" style="max-width: 100%;"></a></p>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">是一个动态、实时、高性能的 API 网关。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">APISIX API网关提供丰富的流量管理功能，如负载均衡、动态上游、金丝雀发布、熔断、身份验证、可观察性等。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以使用</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">APISIX API Gateway</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">来处理传统的南北向流量，以及服务之间的东西向流量。它也可以用作</font></font><a href="https://github.com/apache/apisix-ingress-controller"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">k8s ingress controller</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX 的技术架构：</font></font></p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer" href="/apache/apisix/blob/master/docs/assets/images/apisix.png"><img src="/apache/apisix/raw/master/docs/assets/images/apisix.png" alt="Apache APISIX 的技术架构" style="max-width: 100%;"></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">社区</font></font></h2><a id="user-content-community" class="anchor" aria-label="固定链接：社区" href="#community"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><a href="https://www.g2.com/products/apache-apisix/reviews" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请写评论</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">邮件列表：发送邮件至</font></font><a href="mailto:dev-subscribe@apisix.apache.org"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">dev-subscribe@apisix.apache.org</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，按照回复即可订阅邮件列表。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Slack Workspace -</font></font><a href="https://apisix.apache.org/slack" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">邀请链接</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（如果此链接已过期，请打开一个</font></font><a href="https://apisix.apache.org/docs/general/submit-issue" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">问题</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">），然后加入 #apisix 频道（频道 -&gt; 浏览频道 -&gt; 搜索“apisix”）。</font></font></li>
+<li><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/b1248fc4df24a5fd59043541efe141b4654c4a57bed71f36dec0aaaba678ec96/68747470733a2f2f696d672e736869656c64732e696f2f747769747465722f666f6c6c6f772f4170616368654150495349583f7374796c653d736f6369616c"><img src="https://camo.githubusercontent.com/b1248fc4df24a5fd59043541efe141b4654c4a57bed71f36dec0aaaba678ec96/68747470733a2f2f696d672e736869656c64732e696f2f747769747465722f666f6c6c6f772f4170616368654150495349583f7374796c653d736f6369616c" alt="Twitter 关注" data-canonical-src="https://img.shields.io/twitter/follow/ApacheAPISIX?style=social" style="max-width: 100%;"></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">- 使用主题标签关注我们并与我们互动</font></font><code>#ApacheAPISIX</code></li>
+<li><a href="https://apisix.apache.org/docs/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文档</font></font></a></li>
+<li><a href="https://github.com/apache/apisix/discussions"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">讨论</font></font></a></li>
+<li><a href="https://apisix.apache.org/blog" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">博客</font></font></a></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">特征</font></font></h2><a id="user-content-features" class="anchor" aria-label="固定链接：功能" href="#features"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以使用API&ZeroWidthSpace;&ZeroWidthSpace;SIX API网关作为流量入口，处理所有的业务数据，包括动态路由、动态上行、动态证书、A/B测试、金丝雀发布、蓝绿部署、限速、防御恶意攻击、指标、监控报警、服务可观测性、服务治理等。</font></font></p>
+<ul dir="auto">
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">所有平台</font></font></strong></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">云原生：与平台无关，不受供应商锁定，APISIX API 网关可以从裸机运行到 Kubernetes。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持ARM64：不必担心基础技术的锁定。</font></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">多协议</font></font></strong></p>
+<ul dir="auto">
+<li><a href="/apache/apisix/blob/master/docs/en/latest/stream-proxy.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">TCP/UDP 代理</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：动态 TCP/UDP 代理。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/dubbo-proxy.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dubbo 代理</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：动态 HTTP 到 Dubbo 代理。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/mqtt-proxy.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">动态 MQTT 代理</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：支持通过 MQTT 负载平衡</font></font><code>client_id</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，均支持 MQTT </font></font><a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3.1.*</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">5.0</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/grpc-proxy.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gRPC 代理</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：代理 gRPC 流量。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/grpc-web.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gRPC Web 代理</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：将 gRPC Web 流量代理到 gRPC 服务。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/grpc-transcode.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">gRPC 转码</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：支持协议转码，以便客户端可以使用 HTTP/JSON 访问您的 gRPC API。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">代理 Websocket</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">代理协议</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">HTTP(S) 正向代理</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/certificate.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SSL</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：动态加载 SSL 证书。</font></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">全动态</font></font></strong></p>
+<ul dir="auto">
+<li><a href="/apache/apisix/blob/master/docs/en/latest/terminology/plugin.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">热更新和热插件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：无需重新启动即可持续更新其配置和插件！</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/proxy-rewrite.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">代理重写</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：</font><font style="vertical-align: inherit;">支持</font><font style="vertical-align: inherit;">在发送到上游之前重写请求</font><font style="vertical-align: inherit;">的</font></font><code>host</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、、、、</font><font style="vertical-align: inherit;">。</font></font><code>uri</code><font style="vertical-align: inherit;"></font><code>schema</code><font style="vertical-align: inherit;"></font><code>method</code><font style="vertical-align: inherit;"></font><code>headers</code><font style="vertical-align: inherit;"></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/response-rewrite.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">响应重写</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：向客户端设置定制的响应状态代码、正文和标头。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">动态负载平衡：带权重的循环负载平衡。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基于哈希的负载平衡：使用一致的哈希会话进行负载平衡。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/tutorials/health-check.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">健康检查</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：对上游节点启用健康检查，并在负载平衡时自动过滤不健康的节点，以确保系统稳定性。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">断路器：智能跟踪不健康的上游服务。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/proxy-mirror.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">代理镜像</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：提供镜像客户端请求的能力。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/traffic-split.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">流量分割</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：允许用户逐步引导各个上游之间的流量百分比。</font></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">细粒度路由</font></font></strong></p>
+<ul dir="auto">
+<li><a href="/apache/apisix/blob/master/docs/en/latest/router-radixtree.md#how-to-use-libradixtree-in-apisix"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持全路径匹配和前缀匹配</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/router-radixtree.md#how-to-filter-route-by-nginx-builtin-variable"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持所有Nginx内置变量作为路由的条件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，因此您可以使用</font></font><code>cookie</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><code>args</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">等作为路由条件实现金丝雀发布、A/B测试等。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持</font></font><a href="https://github.com/iresty/lua-resty-radixtree#operator-list"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">多种操作符作为路由的判断条件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，例如</font></font><code>{"arg_age", "&gt;", 24}</code></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持</font></font><a href="https://github.com/iresty/lua-resty-radixtree/blob/master/t/filter-fun.t#L10"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自定义路线匹配功能</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">IPv6：使用IPv6匹配路由。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持</font></font><a href="/apache/apisix/blob/master/docs/en/latest/admin-api.md#route"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">TTL</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/router-radixtree.md#3-match-priority"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持优先级</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/batch-requests.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持批量 Http 请求</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/router-radixtree.md#how-to-filter-route-by-graphql-attributes"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持通过 GraphQL 属性过滤路由</font></font></a></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安全</font></font></strong></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">丰富的身份验证和授权支持：
+</font></font><ul dir="auto">
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/key-auth.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">密钥认证</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/jwt-auth.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">智威汤逊</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/basic-auth.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基本认证</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/wolf-rbac.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">狼人rbac</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/authz-casbin.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">卡斯宾</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/authz-keycloak.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">密钥斗篷</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/authz-casdoor.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">卡斯多尔</font></font></a></li>
+</ul>
+</li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/ip-restriction.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">IP白名单/黑名单</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/referer-restriction.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Referer 白名单/黑名单</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/openid-connect.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">IdP</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：支持外部身份平台，例如 Auth0、okta 等。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/limit-req.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">限制请求</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/limit-count.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">限制计数</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/limit-conn.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">限制并发</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">防ReDoS（正则表达式拒绝服务）：内置防ReDoS策略，无需配置。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/cors.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">CORS</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为您的 API 启用 CORS（跨域资源共享）。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/uri-blocker.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">URI Blocker</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：通过 URI 阻止客户端请求。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/request-validation.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请求验证器</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/csrf.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">CSRF</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基于的</font></font><a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery#Double_Submit_Cookie" rel="nofollow"><code>Double Submit Cookie</code></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">方式，保护你的API免受CSRF攻击。</font></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">操作友好</font></font></strong></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Zipkin 追踪：</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/zipkin.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Zipkin</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">开源APM：支持</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/skywalking.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache SkyWalking</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">与外部服务发现配合使用：除了内置的 etcd 之外，还支持</font></font><a href="/apache/apisix/blob/master/docs/en/latest/discovery/consul.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Consul</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/discovery/consul_kv.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Consul_kv</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/discovery/nacos.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Nacos</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/discovery/eureka.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Eureka</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><a href="https://github.com/api7/apisix-seed/blob/main/docs/en/latest/zookeeper.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Zookeeper (CP)</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">监控和指标：</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/prometheus.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Prometheus</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">集群：APISIX 节点是无状态的，创建配置中心的集群，请参考</font></font><a href="https://etcd.io/docs/v3.5/op-guide/clustering/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">etcd 集群指南</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">高可用性：支持在同一个集群中配置多个etcd地址。</font></font></li>
+<li><a href="https://github.com/apache/apisix-dashboard"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">仪表板</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">版本控制：支持操作回滚。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">CLI：通过命令行启动\停止\重新加载 APISIX。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/deployment-modes.md#standalone"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Standalone</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：支持从本地YAML文件加载路由规则，在kubernetes(k8s)等环境下更加友好。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/terminology/global-rule.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">全局规则</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：允许针对所有请求运行任何插件，例如：限制速率、IP 过滤器等。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">高性能：单核QPS达到18k，平均延迟小于0.2毫秒。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/fault-injection.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">故障注入</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/admin-api.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">REST Admin API</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：使用 REST Admin API 控制 Apache APISIX，默认只允许 127.0.0.1 访问，可以修改</font></font><code>allow_admin</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中的字段</font></font><code>conf/config.yaml</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">指定允许调用 Admin API 的 IP 列表。另外注意 Admin API 使用 key auth 来验证调用者的身份。</font><strong><font style="vertical-align: inherit;">需要在部署前修改</font></strong><strong><font style="vertical-align: inherit;">中的字段</font></strong></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以</font></font><code>admin_key</code><font style="vertical-align: inherit;"></font><code>conf/config.yaml</code><font style="vertical-align: inherit;"></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">确保安全。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">外部日志记录器：将访问日志导出到外部日志管理工具。（</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/http-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">HTTP 日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/tcp-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">TCP 日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/kafka-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Kafka 日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/udp-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">UDP 日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/rocketmq-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">RocketMQ 日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/skywalking-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SkyWalking 日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/sls-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">阿里云日志记录(SLS)</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/google-cloud-logging.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Google Cloud Logging</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/splunk-hec-logging.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Splunk HEC Logging</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/file-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件日志记录器</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/loggly.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">SolarWinds Loggly Logging</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins/tencent-cloud-cls.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">腾讯云 CLS</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/clickhouse-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ClickHouse</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：将日志推送到 ClickHouse。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/elasticsearch-logger.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Elasticsearch</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：将日志推送到 Elasticsearch。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/datadog.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Datadog</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：通过 UDP 协议将自定义指标推送到 DogStatsD 服务器，与</font></font><a href="https://docs.datadoghq.com/agent/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Datadog 代理</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">捆绑在一起。DogStatsD 基本上是 StatsD 协议的一个实现，它收集 Apache APISIX 代理的自定义指标，将其聚合为单个数据点并将其发送到配置的 Datadog 服务器。</font></font></li>
+<li><a href="https://github.com/apache/apisix-helm-chart"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Helm 图表</font></font></a></li>
+<li><a href="https://www.vaultproject.io/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">HashiCorp Vault ：支持机密管理解决方案，用于从低信任环境中支持的 Vault 安全存储访问机密。目前，可以使用</font></font></a><font style="vertical-align: inherit;"></font><a href="/apache/apisix/blob/master/docs/en/latest/terminology/secret.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">APISIX Secret</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">资源从 jwt-auth 身份验证插件中的 Vault 链接 RS256 密钥（公钥-私钥对）或密钥</font><font style="vertical-align: inherit;">。</font></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">高度可扩展</font></font></strong></p>
+<ul dir="auto">
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugin-develop.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自定义插件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：允许挂接常见阶段</font><font style="vertical-align: inherit;">，</font><font style="vertical-align: inherit;">例如</font></font><code>rewrite</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，，，</font><font style="vertical-align: inherit;">和</font><font style="vertical-align: inherit;">，还允许挂接</font><font style="vertical-align: inherit;">阶段。</font></font><code>access</code><font style="vertical-align: inherit;"></font><code>header filter</code><font style="vertical-align: inherit;"></font><code>body filter</code><font style="vertical-align: inherit;"></font><code>log</code><font style="vertical-align: inherit;"></font><code>balancer</code><font style="vertical-align: inherit;"></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/external-plugin.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">插件可以用 Java/Go/Python 编写</font></font></a></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/wasm.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以使用 Proxy Wasm SDK 编写插件</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自定义负载平衡算法：您可以在该阶段使用自定义负载平衡算法</font></font><code>balancer</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自定义路由：支持用户自己实现路由算法。</font></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">多语言支持</font></font></strong></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX 是一个用于插件开发的多语言网关，并通过</font></font><code>RPC</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和提供支持</font></font><code>Wasm</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。
+</font></font><a target="_blank" rel="noopener noreferrer" href="/apache/apisix/blob/master/docs/assets/images/external-plugin.png"><img src="/apache/apisix/raw/master/docs/assets/images/external-plugin.png" alt="Apache APISIX 提供多语言支持" style="max-width: 100%;"></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">RPC 方式，是目前的方式。开发者可以根据需求选择语言，通过 RPC 启动独立进程后，通过本地 RPC 通信与 APISIX 进行数据交互。目前 APISIX 已经支持</font></font><a href="https://github.com/apache/apisix-java-plugin-runner"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Java</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="https://github.com/apache/apisix-go-plugin-runner"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Golang</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="https://github.com/apache/apisix-python-plugin-runner"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Python</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和 Node.js 。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Wasm，即 WebAssembly，是一种实验性的方式。APISIX 可以通过使用</font><a href="https://github.com/proxy-wasm/spec#sdks"><font style="vertical-align: inherit;">Proxy Wasm SDK</font></a><font style="vertical-align: inherit;">编写的APISIX </font></font><a href="https://github.com/apache/apisix/blob/master/docs/en/latest/wasm.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wasm 插件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">来加载并运行 Wasm 字节码。开发者只需要按照 SDK 的说明编写代码，然后使用 APISIX 将其编译为可以在 Wasm VM 上运行的 Wasm 字节码即可。</font></font><a href="https://github.com/proxy-wasm/spec#sdks"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font></li>
+</ul>
+</li>
+<li>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">无服务器</font></font></strong></p>
+<ul dir="auto">
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/serverless.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Lua 函数</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：调用 APISIX 中各个阶段的函数。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/aws-lambda.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">AWS Lambda</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：与 AWS Lambda 功能集成，作为动态上游将特定 URI 的所有请求代理到 AWS API 网关端点。支持通过 api 密钥和 AWS IAM 访问密钥进行授权。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/azure-functions.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Azure Functions</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：与 Azure Serverless Function 无缝集成，作为动态上游将对特定 URI 的所有请求代理到 Microsoft Azure 云。</font></font></li>
+<li><a href="/apache/apisix/blob/master/docs/en/latest/plugins/openwhisk.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache OpenWhisk</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：与 Apache OpenWhisk 无缝集成，作为动态上游将对特定 URI 的所有请求代理到您自己的 OpenWhisk 集群。</font></font></li>
+</ul>
+</li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">立即开始</font></font></h2><a id="user-content-get-started" class="anchor" aria-label="永久链接：开始" href="#get-started"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ol dir="auto">
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请参阅</font></font><a href="https://apisix.apache.org/docs/apisix/installation-guide/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装文档</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">入门</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">入门指南是学习 APISIX 基础知识的绝佳方式。只需按照</font></font><a href="https://apisix.apache.org/docs/apisix/getting-started/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">入门指南中的步骤操作</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">即可。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，您可以按照文档尝试更多</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugins"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">插件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">管理 API</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX 提供</font></font><a href="/apache/apisix/blob/master/docs/en/latest/admin-api.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">REST Admin API</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">来动态控制 Apache APISIX 集群。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">插件开发</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以参考</font></font><a href="/apache/apisix/blob/master/docs/en/latest/plugin-develop.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">插件开发指南</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，以及示例插件</font></font><code>example-plugin</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的代码实现。阅读</font></font><a href="/apache/apisix/blob/master/docs/en/latest/terminology/plugin.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">插件概念</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以帮助您更深入地了解插件。</font></font></p>
+</li>
+</ol>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">更多文档请参考</font></font><a href="https://apisix.apache.org/docs/apisix/getting-started/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX 文档站点</font></font></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基准</font></font></h2><a id="user-content-benchmark" class="anchor" aria-label="固定链接：基准" href="#benchmark"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用AWS的八核服务器，APISIX的QPS达到14万，延迟仅为0.2ms。</font></font></p>
+<p dir="auto"><a href="/apache/apisix/blob/master/benchmark/run.sh"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基准测试脚本</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">已开源，欢迎尝试和贡献。</font></font></p>
+<p dir="auto"><a href="https://apisix.apache.org/blog/2022/06/07/installation-performance-test-of-apigateway-apisix-on-aws-graviton3" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">APISIX 在 AWS Graviton3 C7g 中也能完美运行。</font></font></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">长期贡献者</font></font></h2><a id="user-content-contributor-over-time" class="anchor" aria-label="永久链接：长期贡献者" href="#contributor-over-time"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<blockquote>
+<p dir="auto"><a href="https://www.apiseven.com/contributor-graph" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">访问此处</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以生成随时间推移的贡献者。</font></font></p>
+</blockquote>
+<p dir="auto"><a href="https://www.apiseven.com/en/contributor-graph?repo=apache/apisix" rel="nofollow"><img src="https://camo.githubusercontent.com/ddf26a613c418d15dc149437a0bb87ff7351281dec4291ce4c75da6b53168003/68747470733a2f2f636f6e7472696275746f722d67726170682d6170692e617069736576656e2e636f6d2f636f6e7472696275746f72732d7376673f7265706f3d6170616368652f617069736978" alt="随时间变化的贡献者" data-canonical-src="https://contributor-graph-api.apiseven.com/contributors-svg?repo=apache/apisix" style="max-width: 100%;"></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用户故事</font></font></h2><a id="user-content-user-stories" class="anchor" aria-label="永久链接：用户故事" href="#user-stories"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><a href="https://www.efactory-project.eu/post/api-security-gateway-using-apisix-in-the-efactory-platform" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">欧洲 eFactory 平台：API 安全网关 – 在 eFactory 平台中使用 APISIX</font></font></a></li>
+<li><a href="https://github.com/COPRS/infrastructure/wiki/Networking-trade-off"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">哥白尼参考系统软件</font></font></a></li>
+<li><a href="https://apisix.apache.org/blog/tags/case-studies/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">更多故事</font></font></a></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">谁使用 APISIX API 网关？</font></font></h2><a id="user-content-who-uses-apisix-api-gateway" class="anchor" aria-label="永久链接：谁使用 APISIX API 网关？" href="#who-uses-apisix-api-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">各种各样的公司和组织使用 APISIX API 网关进行研究、生产和商业产品，其中一些如下：</font></font></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">空中云汇</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比利比利</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">视源电子</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">欧洲 eFactory 平台</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">欧洲哥白尼参考系</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">吉利</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">荣誉</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">地平线机器人</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">爱奇艺</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">联想</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">美国宇航局喷气推进实验室</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">奈雪</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OPPO</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">青云</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">瑞士电信</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">腾讯游戏</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中国民航信息</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">活体</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">新浪微博</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们城市</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">WPS</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">小鹏汽车</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">飞涨</font></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">景观</font></font></h2><a id="user-content-landscape" class="anchor" aria-label="固定链接：景观" href="#landscape"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p align="left" dir="auto">
+<a target="_blank" rel="noopener noreferrer" href="/apache/apisix/blob/master/logos/cncf-landscape-white-bg.jpg"><img src="/apache/apisix/raw/master/logos/cncf-landscape-white-bg.jpg" width="175" style="max-width: 100%;"></a>&nbsp;&nbsp;<a target="_blank" rel="noopener noreferrer" href="/apache/apisix/blob/master/logos/cncf-white-bg.jpg"><img src="/apache/apisix/raw/master/logos/cncf-white-bg.jpg" width="200" style="max-width: 100%;"></a>
+<br><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+APISIX 丰富了</font></font><a href="https://landscape.cncf.io/card-mode?category=api-gateway&amp;grouping=category" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+CNCF API 网关环境。</font></font></a>
 </p>
-
-## Logos
-
-- [Apache APISIX logo(PNG)](https://github.com/apache/apisix/tree/master/logos/apache-apisix.png)
-- [Apache APISIX logo source](https://apache.org/logos/#apisix)
-
-## Acknowledgments
-
-Inspired by Kong and Orange.
-
-## License
-
-[Apache 2.0 License](https://github.com/apache/apisix/tree/master/LICENSE)
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">徽标</font></font></h2><a id="user-content-logos" class="anchor" aria-label="永久链接：徽标" href="#logos"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><a href="https://github.com/apache/apisix/tree/master/logos/apache-apisix.png"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX 徽标（PNG）</font></font></a></li>
+<li><a href="https://apache.org/logos/#apisix" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache APISIX 徽标来源</font></font></a></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">致谢</font></font></h2><a id="user-content-acknowledgments" class="anchor" aria-label="永久链接：致谢" href="#acknowledgments"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">受到金刚和橙子的启发。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">执照</font></font></h2><a id="user-content-license" class="anchor" aria-label="永久链接：许可证" href="#license"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><a href="https://github.com/apache/apisix/tree/master/LICENSE"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Apache 2.0 许可证</font></font></a></p>
+</article></div>
